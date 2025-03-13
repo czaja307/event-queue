@@ -1,9 +1,9 @@
 import os
 import ssl
 import sys
+import time
 
 import pika
-import time
 import logging
 
 from dotenv import load_dotenv
@@ -28,18 +28,21 @@ def main():
     # Configure logger
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-    count = 1
-    while True:
-        event = Type1Event("event1", str({"message": f"Event1 - Message {count}"}))
-        channel.basic_publish(exchange='', routing_key='event1', body=event.to_json())
-        logging.info(f"Published: {event}")
-        count += 1
-        time.sleep(2)
+    def callback(ch, method, properties, body):
+        event = Type1Event.from_json(body)
+        logging.info(f"Received: {event}")
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+        time.sleep(4)
+
+    channel.basic_consume(queue='event1', on_message_callback=callback)
+
+    print(' [*] Waiting for messages. To exit press CTRL+C')
+    channel.start_consuming()
 
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        logging.info("Publisher stopped.")
+        logging.info("Consumer stopped.")
         sys.exit(0)
