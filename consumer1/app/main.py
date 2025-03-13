@@ -23,7 +23,8 @@ def main():
     channel = connection.channel()
 
     # Declare the queue
-    channel.queue_declare(queue=Type1Event.__name__ + "Queue")
+    queue_name = Type1Event.__name__ + "Queue"
+    channel.queue_declare(queue=queue_name)
 
     # Configure logger
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -34,7 +35,7 @@ def main():
         ch.basic_ack(delivery_tag=method.delivery_tag)
         time.sleep(4)
 
-    channel.basic_consume(queue='event1', on_message_callback=callback)
+    channel.basic_consume(queue=queue_name, on_message_callback=callback)
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()

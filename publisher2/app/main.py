@@ -24,7 +24,8 @@ def main():
     channel = connection.channel()
 
     # Declare the queue
-    channel.queue_declare(queue=Type2Event.__name__+"Queue")
+    queue_name = Type2Event.__name__ + "Queue"
+    channel.queue_declare(queue=queue_name)
 
     # Configure logger
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -32,7 +33,7 @@ def main():
     count = 1
     while True:
         event = Type2Event("event2", str({"message": f"Event2 - Message {count}"}))
-        channel.basic_publish(exchange='', routing_key='event2', body=event.to_json())
+        channel.basic_publish(exchange='', routing_key=queue_name, body=event.to_json())
         logging.info(f"Published: {event}")
         count += 1
         time.sleep(random.randint(1, 5))
