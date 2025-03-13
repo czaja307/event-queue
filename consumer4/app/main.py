@@ -8,7 +8,7 @@ import logging
 
 from dotenv import load_dotenv
 
-from consumer1.domain import Type1Event
+from consumer4.domain import Type4Event
 
 
 def main():
@@ -23,16 +23,16 @@ def main():
     channel = connection.channel()
 
     # Declare the queue
-    channel.queue_declare(queue=Type1Event.__name__ + "Queue")
+    channel.queue_declare(queue=Type4Event.__name__ + "Queue")
 
     # Configure logger
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     def callback(ch, method, properties, body):
-        event = Type1Event.from_json(body)
+        event = Type4Event.from_json(body)
         logging.info(f"Received: {event}")
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        time.sleep(4)
+        time.sleep(13)
 
     channel.basic_consume(queue='event1', on_message_callback=callback)
 

@@ -1,14 +1,15 @@
 import os
+import random
 import ssl
 import sys
-import time
 
 import pika
+import time
 import logging
 
 from dotenv import load_dotenv
 
-from consumer1.domain import Type1Event
+from publisher3.domain import Type3Event
 
 
 def main():
@@ -23,26 +24,23 @@ def main():
     channel = connection.channel()
 
     # Declare the queue
-    channel.queue_declare(queue=Type1Event.__name__ + "Queue")
+    channel.queue_declare(queue=Type3Event.__name__+"Queue")
 
     # Configure logger
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-    def callback(ch, method, properties, body):
-        event = Type1Event.from_json(body)
-        logging.info(f"Received: {event}")
-        ch.basic_ack(delivery_tag=method.delivery_tag)
-        time.sleep(4)
-
-    channel.basic_consume(queue='event1', on_message_callback=callback)
-
-    print(' [*] Waiting for messages. To exit press CTRL+C')
-    channel.start_consuming()
+    count = 1
+    while True:
+        event = Type3Event("event3", str({"message": f"Event3 - Message {count}"}))
+        channel.basic_publish(exchange='', routing_key='event3', body=event.to_json())
+        logging.info(f"Published: {event}")
+        count += 1
+        time.sleep(random.randint(5, 15))
 
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        logging.info("Consumer stopped.")
+        logging.info("Publisher stopped.")
         sys.exit(0)

@@ -23,7 +23,7 @@ def main():
     channel = connection.channel()
 
     # Declare the queue
-    channel.queue_declare(queue='event1')
+    channel.queue_declare(queue=Type1Event.__name__+"Queue")
 
     # Configure logger
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
