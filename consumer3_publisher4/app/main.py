@@ -23,10 +23,10 @@ def main():
     channel = connection.channel()
 
     # Declare the queue
-    incoming_queue_name = Type3Event.__name__ + "Queue"
+    incoming_queue_name = Type3Event.__name__
     channel.queue_declare(queue=incoming_queue_name)
 
-    outgoing_queue_name = Type4Event.__name__ + "Queue"
+    outgoing_queue_name = Type4Event.__name__
     channel.queue_declare(queue=outgoing_queue_name)
 
     # Configure logger

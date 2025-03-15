@@ -24,7 +24,7 @@ def main():
     channel = connection.channel()
 
     # Declare the queue
-    queue_name = Type2Event.__name__ + "Queue"
+    queue_name = Type2Event.__name__
     channel.queue_declare(queue=queue_name)
 
     # Configure logger
